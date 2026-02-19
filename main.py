@@ -15,7 +15,7 @@ st.set_page_config(
 # Load data
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data/Match_Info.csv")
+    df = pd.read_csv("Match_Info.csv")
     # Convert match_date to datetime
     df['match_date'] = pd.to_datetime(df['match_date'], errors='coerce')
     # Extract year from match_date
