@@ -1,0 +1,11 @@
+[project]
+name = "20251203"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "streamlit>=1.51.0",
+    "pandas>=2.0.0",
+    "plotly>=5.0.0",
+]
