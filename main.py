@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 from datetime import datetime
 
 # --- PAGE CONFIGURATION ---
@@ -21,12 +20,9 @@ TEAM_LOGOS = {
     "Sunrisers Hyderabad": "https://upload.wikimedia.org/wikipedia/en/thumb/8/81/Sunrisers_Hyderabad.svg/1200px-Sunrisers_Hyderabad.svg.png",
     "Rajasthan Royals": "https://upload.wikimedia.org/wikipedia/en/thumb/6/60/Rajasthan_Royals_Logo.svg/1200px-Rajasthan_Royals_Logo.svg.png",
     "Delhi Capitals": "https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/Delhi_Capitals.svg/1200px-Delhi_Capitals.svg.png",
-    "Delhi Daredevils": "https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/Delhi_Capitals.svg/1200px-Delhi_Capitals.svg.png",
     "Punjab Kings": "https://upload.wikimedia.org/wikipedia/en/thumb/d/d4/Punjab_Kings_Logo.svg/1200px-Punjab_Kings_Logo.svg.png",
-    "Kings XI Punjab": "https://upload.wikimedia.org/wikipedia/en/thumb/d/d4/Punjab_Kings_Logo.svg/1200px-Punjab_Kings_Logo.svg.png",
     "Gujarat Titans": "https://upload.wikimedia.org/wikipedia/en/thumb/0/09/Gujarat_Titans_Logo.svg/1200px-Gujarat_Titans_Logo.svg.png",
-    "Lucknow Super Giants": "https://upload.wikimedia.org/wikipedia/en/thumb/a/a9/Lucknow_Super_Giants_IPL_Logo.svg/1200px-Lucknow_Super_Giants_IPL_Logo.svg.png",
-    "Deccan Chargers": "https://upload.wikimedia.org/wikipedia/en/thumb/b/bf/Deccan_Chargers_Logo.svg/1200px-Deccan_Chargers_Logo.svg.png"
+    "Lucknow Super Giants": "https://upload.wikimedia.org/wikipedia/en/thumb/a/a9/Lucknow_Super_Giants_IPL_Logo.svg/1200px-Lucknow_Super_Giants_IPL_Logo.svg.png"
 }
 
 # --- LOAD DATA ---
@@ -66,9 +62,23 @@ filtered_df = df[
     (df['city'].isin(selected_cities) if selected_cities else True)
 ].copy()
 
-# --- MAIN DASHBOARD HEADER ---
-st.title("🏏 IPL Match Analysis Dashboard")
-st.markdown("---")
+# --- MAIN DASHBOARD HEADER & LOGO BANNER ---
+st.markdown("<h2 style='text-align: center; color: #2c3e50;'>🏏 IPL Match Analysis Dashboard</h2>", unsafe_allow_html=True)
+
+# Generate HTML for the banner with the 10 active teams
+active_teams = [
+    "Chennai Super Kings", "Mumbai Indians", "Royal Challengers Bangalore",
+    "Kolkata Knight Riders", "Sunrisers Hyderabad", "Rajasthan Royals",
+    "Delhi Capitals", "Punjab Kings", "Gujarat Titans", "Lucknow Super Giants"
+]
+
+banner_html = "<div style='display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 30px; padding-top: 10px; padding-bottom: 20px;'>"
+for team in active_teams:
+    if team in TEAM_LOGOS:
+        banner_html += f"<img src='{TEAM_LOGOS[team]}' width='70' title='{team}' style='border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>"
+banner_html += "</div><hr>"
+
+st.markdown(banner_html, unsafe_allow_html=True)
 
 # --- KPI METRICS ---
 st.header("📊 Key Performance Indicators")
