@@ -1,106 +1,103 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from datetime import datetime
 
+# --- PAGE CONFIGURATION ---
 st.set_page_config(
-    page_title="IPL Analytics Pro",
+    page_title="IPL Analytics Hub",
     page_icon="🏏",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
+# --- ADVANCED STYLING (GLOWING HEADER & CLEAN UI) ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    /* Import modern font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     
     html, body, [class*="css"] {
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
-        background-color: #f8fafc;
+        font-family: 'Inter', sans-serif !important;
+        background-color: #f4f7f9; /* Light gray background for SaaS look */
     }
 
-    .custom-header {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        padding: 25px 30px;
+    /* --- GLOWING HEADER STYLES --- */
+    .glow-header-container {
+        background: linear-gradient(135deg, #0A1A3C 0%, #1B3A6B 100%); /* Deep dark blue gradient */
+        padding: 25px 35px;
         border-radius: 16px;
         display: flex;
         align-items: center;
-        gap: 20px;
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-        margin-bottom: 25px;
-        margin-top: -30px;
-    }
-    .custom-header h1 {
-        color: #f8fafc !important;
-        margin: 0;
-        font-size: 32px;
-        font-weight: 700;
-        letter-spacing: -0.5px;
+        gap: 25px;
+        /* Blueish-purple outer glow */
+        box-shadow: 0 0 25px rgba(66, 153, 225, 0.5), inset 0 0 10px rgba(255,255,255,0.1);
+        margin-bottom: 30px;
+        margin-top: -20px;
+        border: 1px solid #2c4a7c;
     }
 
+    .ipl-logo-glow {
+        width: 75px;
+        /* Make logo white and give it a soft glow */
+        filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(255,255,255,0.6));
+    }
+
+    .glow-text {
+        color: white;
+        margin: 0;
+        font-size: 36px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        /* Text neon glow effect */
+        text-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(66, 153, 225, 0.8), 0 0 30px rgba(66, 153, 225, 0.6);
+    }
+
+    /* --- LOGO BANNER STYLES --- */
+    .logo-banner {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
     .logo-card {
         background: white;
-        padding: 10px 15px;
         border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        padding: 12px 18px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: transform 0.2s;
-        border: 1px solid #e2e8f0;
     }
     .logo-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-        border-color: #cbd5e1;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        border-color: #3b82f6;
+    }
+    .logo-card img {
+        height: 55px;
+        object-fit: contain;
     }
 
-    div[data-testid="metric-container"] {
+    /* --- GENERAL UI CARDS --- */
+    /* Metrics and Charts as clean white cards */
+    div[data-testid="metric-container"], [data-testid="stPlotlyChart"], .stDataFrame {
         background-color: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
+        border-radius: 12px;
         padding: 20px;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-    }
-    div[data-testid="metric-container"] label {
-        color: #64748b !important;
-        font-weight: 600;
-        font-size: 15px;
-    }
-    div[data-testid="metric-container"] div {
-        color: #0f172a !important;
-        font-weight: 700;
-    }
-
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 24px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        height: 50px;
-        white-space: pre-wrap;
-        background-color: transparent;
-        border-radius: 4px 4px 0px 0px;
-        gap: 1px;
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: transparent;
-        border-bottom: 3px solid #3b82f6;
-        color: #3b82f6;
-        font-weight: 600;
-    }
-    
-    [data-testid="stPlotlyChart"], .stDataFrame {
-        background-color: white;
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         border: 1px solid #e2e8f0;
     }
+    /* Custom Tab Styling */
+    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
+    .stTabs [data-baseweb="tab"] { border-radius: 8px; background-color: #fff; border: 1px solid #e2e8f0; padding: 10px 20px; }
+    .stTabs [aria-selected="true"] { background-color: #ebf8ff; border-color: #3b82f6; color: #1e40af; font-weight: 600; }
     </style>
 """, unsafe_allow_html=True)
 
+# --- ULTRA-STABLE ESPN LOGO LINKS (Will not break, no flags) ---
 TEAM_LOGOS = {
     "Chennai Super Kings": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313421.logo.png",
     "Mumbai Indians": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313419.logo.png",
@@ -123,6 +120,7 @@ TEAM_LOGOS = {
     "Kochi Tuskers Kerala": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313489.logo.png"
 }
 
+# --- LOAD DATA ---
 @st.cache_data
 def load_data():
     df = pd.read_csv("Match_Info.csv")
@@ -136,34 +134,40 @@ def load_data():
 
 df = load_data()
 
+# --- NEW GLOWING HEADER ---
 st.markdown("""
-<div class="custom-header">
-    <h1 style="font-size: 38px;">🏏 IPL Analytics Hub</h1>
-</div>
+    <div class="glow-header-container">
+        <img src="https://www.iplt20.com/assets/images/ipl-logo-new-old.png" class="ipl-logo-glow" alt="IPL Logo">
+        <h1 class="glow-text">IPL Analytics Hub</h1>
+    </div>
 """, unsafe_allow_html=True)
 
+# --- FIXED LOGO BANNER (No flags, stable links) ---
 active_teams = [
     "Chennai Super Kings", "Mumbai Indians", "Royal Challengers Bangalore",
     "Kolkata Knight Riders", "Sunrisers Hyderabad", "Rajasthan Royals",
     "Delhi Capitals", "Punjab Kings", "Gujarat Titans", "Lucknow Super Giants"
 ]
 
-banner_html = "<div style='display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px;'>"
+banner_html = '<div class="logo-banner">'
 for team in active_teams:
-    if team in TEAM_LOGOS:
-        banner_html += f"<div class='logo-card'><img src='{TEAM_LOGOS[team]}' height='55' title='{team}'></div>"
+    # Use a default empty string if team not found to prevent broken image icon
+    logo_url = TEAM_LOGOS.get(team, "") 
+    if logo_url:
+        banner_html += f'<div class="logo-card"><img src="{logo_url}" title="{team}"></div>'
 banner_html += "</div>"
 st.markdown(banner_html, unsafe_allow_html=True)
 
-with st.expander("Filter Data", expanded=True):
+# --- FILTERS (In expandable section) ---
+with st.expander("⚙️ **Dashboard Filters**", expanded=True):
     col_f1, col_f2, col_f3 = st.columns(3)
     years = sorted(df['year'].dropna().unique(), reverse=True)
     all_teams = sorted(set(df['team1'].unique().tolist() + df['team2'].unique().tolist()))
     all_venues = sorted(df['venue'].dropna().unique())
     
-    with col_f1: selected_years = st.multiselect("Date Range", options=years, default=years[:5] if len(years) >= 5 else years)
-    with col_f2: selected_teams = st.multiselect("Teams", options=all_teams, default=all_teams)
-    with col_f3: selected_venues = st.multiselect("Venues", options=all_venues, default=all_venues)
+    with col_f1: selected_years = st.multiselect("Select Year(s)", options=years, default=years[:5] if len(years) >= 5 else years)
+    with col_f2: selected_teams = st.multiselect("Select Team(s)", options=all_teams, default=all_teams)
+    with col_f3: selected_venues = st.multiselect("Select Venue(s)", options=all_venues, default=all_venues)
 
 filtered_df = df[
     (df['year'].isin(selected_years) if selected_years else True) &
@@ -171,39 +175,40 @@ filtered_df = df[
     (df['venue'].isin(selected_venues) if selected_venues else True)
 ].copy()
 
+# --- KPI METRICS ---
 st.markdown("<br>", unsafe_allow_html=True)
 col1, col2, col3, col4 = st.columns(4)
-with col1: st.metric("Total Matches", f"{len(filtered_df):,}")
-with col2: st.metric("Unique Teams", len(set(filtered_df['team1'].unique().tolist() + filtered_df['team2'].unique().tolist())))
-with col3: st.metric("Stadiums Played", filtered_df['venue'].nunique())
-with col4: st.metric("Total Cities", filtered_df['city'].nunique())
+with col1: st.metric("Total Matches Played", f"{len(filtered_df):,}")
+with col2: st.metric("Teams Involved", len(set(filtered_df['team1'].unique().tolist() + filtered_df['team2'].unique().tolist())))
+with col3: st.metric("Unique Venues", filtered_df['venue'].nunique())
+with col4: st.metric("Host Cities", filtered_df['city'].nunique())
 st.markdown("<br>", unsafe_allow_html=True)
 
-tab1, tab2, tab3 = st.tabs(["📊 Performance Overview", "⚔️ Head-to-Head Clash", "📋 Raw Data"])
+# --- MAIN TABS FOR ANALYSIS ---
+tab1, tab2, tab3 = st.tabs(["📊 Performance Analysis", "⚔️ Head-to-Head", "📋 Raw Dataset"])
 
 with tab1:
     row1_col1, row1_col2 = st.columns([1.5, 1])
-
     with row1_col1:
-        st.markdown("<h4 style='color: #0f172a;'>Matches Won by Team</h4>", unsafe_allow_html=True)
-        team_wins = filtered_df['winner'].value_counts().head(8).reset_index()
+        st.markdown("### 🏆 Team Win Count")
+        team_wins = filtered_df['winner'].value_counts().head(10).reset_index()
         team_wins.columns = ['Team', 'Wins']
-        fig_wins = px.bar(team_wins, x='Team', y='Wins', color_discrete_sequence=['#3b82f6'])
-        fig_wins.update_layout(plot_bgcolor='white', paper_bgcolor='white', margin=dict(t=10, b=10, l=10, r=10), font=dict(family="Plus Jakarta Sans", color="#333"))
+        # Using a professional blue palette
+        fig_wins = px.bar(team_wins, x='Team', y='Wins', color='Wins', color_continuous_scale='Blues')
+        fig_wins.update_layout(plot_bgcolor='white', paper_bgcolor='white', font=dict(family="Inter", color="#333"))
         st.plotly_chart(fig_wins, use_container_width=True)
-
     with row1_col2:
-        st.markdown("<h4 style='color: #0f172a;'>Toss Decisions</h4>", unsafe_allow_html=True)
+        st.markdown("### 🎲 Toss Decision Trends")
         toss_decision = filtered_df['toss_decision'].value_counts().reset_index()
         toss_decision.columns = ['Decision', 'Count']
-        fig_toss = px.pie(toss_decision, names='Decision', values='Count', hole=0.5, color_discrete_sequence=['#0ea5e9', '#6366f1'])
-        fig_toss.update_layout(plot_bgcolor='white', paper_bgcolor='white', margin=dict(t=10, b=10, l=10, r=10), font=dict(family="Plus Jakarta Sans", color="#333"), legend=dict(orientation="h", y=-0.1))
+        # Using distinct, professional colors
+        fig_toss = px.pie(toss_decision, names='Decision', values='Count', hole=0.5, color_discrete_sequence=['#2563eb', '#7c3aed'])
+        fig_toss.update_layout(plot_bgcolor='white', paper_bgcolor='white', font=dict(family="Inter", color="#333"), legend=dict(orientation="h", y=-0.1))
         st.plotly_chart(fig_toss, use_container_width=True)
 
     row2_col1, row2_col2 = st.columns([1, 1.5])
-
     with row2_col1:
-        st.markdown("<h4 style='color: #0f172a;'>Toss Strategy Impact</h4>", unsafe_allow_html=True)
+        st.markdown("### 🎯 Bat/Field Win Strategy")
         wins_by_decision = {'Bat First': 0, 'Field First': 0}
         for _, row in filtered_df.iterrows():
             if row['toss_winner'] == row['winner']:
@@ -212,14 +217,12 @@ with tab1:
             else:
                 opposite = 'Field First' if str(row['toss_decision']).lower() == 'bat' else 'Bat First'
                 wins_by_decision[opposite] += 1
-                
         decision_df = pd.DataFrame({'Strategy': list(wins_by_decision.keys()), 'Matches Won': list(wins_by_decision.values())})
-        fig_toss_win = px.bar(decision_df, x='Strategy', y='Matches Won', color_discrete_sequence=['#1e293b'])
-        fig_toss_win.update_layout(plot_bgcolor='white', paper_bgcolor='white', margin=dict(t=10, b=10, l=10, r=10), font=dict(family="Plus Jakarta Sans", color="#333"))
+        fig_toss_win = px.bar(decision_df, x='Strategy', y='Matches Won', color='Strategy', color_discrete_sequence=['#1e40af', '#3b82f6'])
+        fig_toss_win.update_layout(plot_bgcolor='white', paper_bgcolor='white', font=dict(family="Inter", color="#333"), showlegend=False)
         st.plotly_chart(fig_toss_win, use_container_width=True)
-
     with row2_col2:
-        st.markdown("<h4 style='color: #0f172a;'>Recent Match Results</h4>", unsafe_allow_html=True)
+        st.markdown("### 📅 Recent Match Log")
         display_df = filtered_df[['match_date', 'team1', 'team2', 'winner', 'player_of_match']].copy()
         display_df['match_date'] = display_df['match_date'].dt.strftime('%Y-%m-%d')
         display_df = display_df.sort_values('match_date', ascending=False).head(10)
@@ -227,9 +230,8 @@ with tab1:
         st.dataframe(display_df, use_container_width=True, hide_index=True)
 
 with tab2:
-    st.markdown("<h4 style='color: #0f172a;'>Head-to-Head Comparison</h4>", unsafe_allow_html=True)
+    st.markdown("### 🆚 Compare Teams")
     h2h_col1, h2h_col2 = st.columns(2)
-
     team1_select = h2h_col1.selectbox("Select Team 1", options=all_teams, index=all_teams.index('Chennai Super Kings') if 'Chennai Super Kings' in all_teams else 0)
     team2_select = h2h_col2.selectbox("Select Team 2", options=all_teams, index=all_teams.index('Mumbai Indians') if 'Mumbai Indians' in all_teams else 1)
 
@@ -238,29 +240,10 @@ with tab2:
             ((filtered_df['team1'] == team1_select) & (filtered_df['team2'] == team2_select)) |
             ((filtered_df['team1'] == team2_select) & (filtered_df['team2'] == team1_select))
         ]
-        
         if len(h2h_matches) > 0:
             team1_wins = len(h2h_matches[h2h_matches['winner'] == team1_select])
             team2_wins = len(h2h_matches[h2h_matches['winner'] == team2_select])
             
             logo_col1, logo_col2, logo_col3 = st.columns([1, 1, 1])
             with logo_col1:
-                st.markdown(f"<div style='text-align: center;'><img src='{TEAM_LOGOS.get(team1_select, '')}' width='120'></div>", unsafe_allow_html=True)
-                st.markdown(f"<h3 style='text-align: center; color: #1e293b;'>{team1_wins} Wins</h3>", unsafe_allow_html=True)
-                
-            with logo_col2:
-                st.markdown("<h4 style='text-align: center; color: #64748b; margin-top: 25px;'>Total Matches</h4>", unsafe_allow_html=True)
-                st.markdown(f"<h1 style='text-align: center; font-size: 3.5rem; color: #0f172a;'>{len(h2h_matches)}</h1>", unsafe_allow_html=True)
-                
-            with logo_col3:
-                st.markdown(f"<div style='text-align: center;'><img src='{TEAM_LOGOS.get(team2_select, '')}' width='120'></div>", unsafe_allow_html=True)
-                st.markdown(f"<h3 style='text-align: center; color: #1e293b;'>{team2_wins} Wins</h3>", unsafe_allow_html=True)
-        else:
-            st.info("No matches found between these teams in the selected filter range.")
-
-with tab3:
-    st.markdown("<h4 style='color: #0f172a;'>Complete Dataset</h4>", unsafe_allow_html=True)
-    st.dataframe(filtered_df, use_container_width=True, hide_index=True)
-    
-    csv = filtered_df.to_csv(index=False)
-    st.download_button(label="📥 Download Dataset", data=csv, file_name=f"ipl_dataset.csv", mime="text/csv")
+                st.markdown(f"<div style='text-align: center; padding: 20px;'><img src='{TEAM_LOGOS.get(team1_select, '')}' width='130'></div>", unsafe_allow
