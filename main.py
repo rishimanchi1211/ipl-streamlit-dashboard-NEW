@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# --- PAGE CONFIGURATION ---
 st.set_page_config(
     page_title="IPL Analytics Hub",
     page_icon="🏏",
@@ -9,15 +10,17 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# --- ADVANCED STYLING ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-    
+
     html, body, [class*="css"] {
         font-family: 'Inter', sans-serif !important;
         background-color: #f4f7f9;
     }
 
+    /* GLOWING HEADER */
     .glow-header-container {
         background: linear-gradient(135deg, #0A1A3C 0%, #1B3A6B 100%);
         padding: 25px 35px;
@@ -45,6 +48,7 @@ st.markdown("""
         text-shadow: 0 0 10px rgba(255,255,255,0.7);
     }
 
+    /* LOGO BANNER */
     .logo-banner {
         display: flex;
         justify-content: center;
@@ -52,7 +56,7 @@ st.markdown("""
         gap: 20px;
         margin-bottom: 30px;
     }
-    
+
     .logo-card {
         background: white;
         border-radius: 12px;
@@ -64,18 +68,19 @@ st.markdown("""
         align-items: center;
         justify-content: center;
     }
-    
+
     .logo-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 15px rgba(0,0,0,0.1);
         border-color: #3b82f6;
     }
-    
+
     .logo-card img {
         height: 55px;
         object-fit: contain;
     }
 
+    /* CARDS & TABS */
     div[data-testid="metric-container"], [data-testid="stPlotlyChart"], .stDataFrame {
         background-color: white;
         border-radius: 12px;
@@ -83,33 +88,34 @@ st.markdown("""
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         border: 1px solid #e2e8f0;
     }
-    
+
     .stTabs [data-baseweb="tab-list"] { gap: 10px; }
     .stTabs [data-baseweb="tab"] { border-radius: 8px; background-color: #fff; border: 1px solid #e2e8f0; padding: 10px 20px; }
     .stTabs [aria-selected="true"] { background-color: #ebf8ff; border-color: #3b82f6; color: #1e40af; font-weight: 600; }
     </style>
 """, unsafe_allow_html=True)
 
+# --- OFFICIAL & STABLE TEAM LOGOS ---
 TEAM_LOGOS = {
-    "Chennai Super Kings": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313421.logo.png",
-    "Mumbai Indians": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313419.logo.png",
-    "Royal Challengers Bangalore": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313418.logo.png",
-    "Royal Challengers Bengaluru": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313418.logo.png",
-    "Kolkata Knight Riders": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313411.logo.png",
-    "Sunrisers Hyderabad": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313480.logo.png",
-    "Rajasthan Royals": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313423.logo.png",
-    "Delhi Capitals": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313422.logo.png",
-    "Delhi Daredevils": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313422.logo.png",
-    "Punjab Kings": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313412.logo.png",
-    "Kings XI Punjab": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313412.logo.png",
-    "Gujarat Titans": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/334700/334707.png",
-    "Lucknow Super Giants": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/334700/334704.png",
-    "Pune Warriors": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313490.logo.png",
-    "Deccan Chargers": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313487.logo.png",
-    "Gujarat Lions": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313482.logo.png",
-    "Rising Pune Supergiant": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313481.logo.png",
-    "Rising Pune Supergiants": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313481.logo.png",
-    "Kochi Tuskers Kerala": "https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313400/313489.logo.png"
+    "Chennai Super Kings": "https://www.iplt20.com/assets/images/teams-new-look/csk.png",
+    "Mumbai Indians": "https://www.iplt20.com/assets/images/teams-new-look/mi.png",
+    "Royal Challengers Bangalore": "https://www.iplt20.com/assets/images/teams-new-look/rcb.png",
+    "Royal Challengers Bengaluru": "https://www.iplt20.com/assets/images/teams-new-look/rcb.png",
+    "Kolkata Knight Riders": "https://www.iplt20.com/assets/images/teams-new-look/kkr.png",
+    "Sunrisers Hyderabad": "https://www.iplt20.com/assets/images/teams-new-look/srh.png",
+    "Rajasthan Royals": "https://www.iplt20.com/assets/images/teams-new-look/rr.png",
+    "Delhi Capitals": "https://www.iplt20.com/assets/images/teams-new-look/dc.png",
+    "Delhi Daredevils": "https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/Delhi_Daredevils_Logo.svg/1200px-Delhi_Daredevils_Logo.svg.png",
+    "Punjab Kings": "https://www.iplt20.com/assets/images/teams-new-look/pbks.png",
+    "Kings XI Punjab": "https://upload.wikimedia.org/wikipedia/en/thumb/0/06/Kings_XI_Punjab_Logo_2019.svg/1200px-Kings_XI_Punjab_Logo_2019.svg.png",
+    "Gujarat Titans": "https://www.iplt20.com/assets/images/teams-new-look/gt.png",
+    "Lucknow Super Giants": "https://www.iplt20.com/assets/images/teams-new-look/lsg.png",
+    "Pune Warriors": "https://upload.wikimedia.org/wikipedia/en/thumb/1/18/Pune_Warriors_India_logo.svg/200px-Pune_Warriors_India_logo.svg.png",
+    "Deccan Chargers": "https://upload.wikimedia.org/wikipedia/en/thumb/b/bf/Deccan_Chargers_Logo.svg/200px-Deccan_Chargers_Logo.svg.png",
+    "Gujarat Lions": "https://upload.wikimedia.org/wikipedia/en/thumb/3/30/Gujarat_Lions_Logo.svg/200px-Gujarat_Lions_Logo.svg.png",
+    "Rising Pune Supergiant": "https://upload.wikimedia.org/wikipedia/en/thumb/0/02/Rising_Pune_Supergiants_Logo.svg/200px-Rising_Pune_Supergiants_Logo.svg.png",
+    "Rising Pune Supergiants": "https://upload.wikimedia.org/wikipedia/en/thumb/0/02/Rising_Pune_Supergiants_Logo.svg/200px-Rising_Pune_Supergiants_Logo.svg.png",
+    "Kochi Tuskers Kerala": "https://upload.wikimedia.org/wikipedia/en/thumb/d/d4/Kochi_Tuskers_Kerala_Logo.svg/200px-Kochi_Tuskers_Kerala_Logo.svg.png"
 }
 
 @st.cache_data
@@ -125,6 +131,7 @@ def load_data():
 
 df = load_data()
 
+# --- HEADER ---
 st.markdown("""
     <div class="glow-header-container">
         <img src="https://www.iplt20.com/assets/images/ipl-logo-new-old.png" class="ipl-logo-glow" alt="IPL Logo">
@@ -132,6 +139,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
+# --- LOGO BANNER ---
 active_teams = [
     "Chennai Super Kings", "Mumbai Indians", "Royal Challengers Bangalore",
     "Kolkata Knight Riders", "Sunrisers Hyderabad", "Rajasthan Royals",
@@ -140,18 +148,19 @@ active_teams = [
 
 banner_html = '<div class="logo-banner">'
 for team in active_teams:
-    logo_url = TEAM_LOGOS.get(team, "") 
+    logo_url = TEAM_LOGOS.get(team, "")
     if logo_url:
-        banner_html += f'<div class="logo-card"><img src="{logo_url}" title="{team}"></div>'
+        banner_html += f'<div class="logo-card"><img src="{logo_url}" title="{team}" alt="{team}"></div>'
 banner_html += "</div>"
 st.markdown(banner_html, unsafe_allow_html=True)
 
+# --- FILTERS ---
 with st.expander("Dashboard Filters", expanded=True):
     col_f1, col_f2, col_f3 = st.columns(3)
     years = sorted(df['year'].dropna().unique(), reverse=True)
     all_teams = sorted(set(df['team1'].unique().tolist() + df['team2'].unique().tolist()))
     all_venues = sorted(df['venue'].dropna().unique())
-    
+
     with col_f1: selected_years = st.multiselect("Select Year(s)", options=years, default=years[:5] if len(years) >= 5 else years)
     with col_f2: selected_teams = st.multiselect("Select Team(s)", options=all_teams, default=all_teams)
     with col_f3: selected_venues = st.multiselect("Select Venue(s)", options=all_venues, default=all_venues)
@@ -162,6 +171,7 @@ filtered_df = df[
     (df['venue'].isin(selected_venues) if selected_venues else True)
 ].copy()
 
+# --- METRICS ---
 st.markdown("<br>", unsafe_allow_html=True)
 col1, col2, col3, col4 = st.columns(4)
 with col1: st.metric("Total Matches Played", f"{len(filtered_df):,}")
@@ -170,6 +180,7 @@ with col3: st.metric("Unique Venues", filtered_df['venue'].nunique())
 with col4: st.metric("Host Cities", filtered_df['city'].nunique())
 st.markdown("<br>", unsafe_allow_html=True)
 
+# --- TABS ---
 tab1, tab2, tab3 = st.tabs(["Performance Analysis", "Head-to-Head", "Raw Dataset"])
 
 with tab1:
@@ -226,10 +237,10 @@ with tab2:
         if len(h2h_matches) > 0:
             team1_wins = len(h2h_matches[h2h_matches['winner'] == team1_select])
             team2_wins = len(h2h_matches[h2h_matches['winner'] == team2_select])
-            
+
             logo1 = TEAM_LOGOS.get(team1_select, "")
             logo2 = TEAM_LOGOS.get(team2_select, "")
-            
+
             logo_col1, logo_col2, logo_col3 = st.columns([1, 1, 1])
             with logo_col1:
                 st.markdown(f"<div style='text-align: center; padding: 20px;'><img src='{logo1}' width='130'></div>", unsafe_allow_html=True)
