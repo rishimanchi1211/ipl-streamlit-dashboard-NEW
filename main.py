@@ -37,12 +37,12 @@ st.markdown("""
     }
 
     .glow-text {
-        color: white;
+        color: #FFFFFF !important;
         margin: 0;
         font-size: 36px;
         font-weight: 800;
         letter-spacing: 1px;
-        text-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(66, 153, 225, 0.8), 0 0 30px rgba(66, 153, 225, 0.6);
+        text-shadow: 0 0 10px rgba(255,255,255,0.7);
     }
 
     .logo-banner {
@@ -52,6 +52,7 @@ st.markdown("""
         gap: 20px;
         margin-bottom: 30px;
     }
+    
     .logo-card {
         background: white;
         border-radius: 12px;
@@ -63,11 +64,13 @@ st.markdown("""
         align-items: center;
         justify-content: center;
     }
+    
     .logo-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 15px rgba(0,0,0,0.1);
         border-color: #3b82f6;
     }
+    
     .logo-card img {
         height: 55px;
         object-fit: contain;
