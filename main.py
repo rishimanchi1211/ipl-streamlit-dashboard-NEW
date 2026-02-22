@@ -196,7 +196,7 @@ with col3: st.metric("Unique Venues", filtered_df['venue'].nunique())
 with col4: st.metric("Host Cities", filtered_df['city'].nunique())
 st.markdown("<br>", unsafe_allow_html=True)
 
-tab1, tab2, tab3 = st.tabs(["Performance Analysis", "Head-to-Head", "Raw Dataset"])
+tab1, tab2, tab3, tab4 = st.tabs(["Performance Analysis", "Head-to-Head", "Raw Dataset", "Advanced Insights"])
 
 with tab1:
     row1_col1, row1_col2 = st.columns([1.5, 1])
@@ -278,3 +278,34 @@ with tab3:
     st.dataframe(filtered_df, use_container_width=True)
     csv = filtered_df.to_csv(index=False)
     st.download_button(label="Download as CSV", data=csv, file_name="ipl_analysis_data.csv", mime="text/csv")
+
+with tab4:
+    adv_col1, adv_col2 = st.columns(2)
+    with adv_col1:
+        st.markdown("### Match Frequency Over Time")
+        matches_by_year = filtered_df.groupby('year').size().reset_index(name='matches')
+        fig_timeline = px.line(matches_by_year, x='year', y='matches', markers=True, color_discrete_sequence=['#1e40af'])
+        fig_timeline.update_layout(plot_bgcolor='white', paper_bgcolor='white', font=dict(family="Inter", color="#333"))
+        st.plotly_chart(fig_timeline, use_container_width=True)
+
+        st.markdown("### Most Active Venues")
+        top_venues = filtered_df['venue'].value_counts().head(8).reset_index()
+        top_venues.columns = ['Venue', 'Matches']
+        fig_venues = px.bar(top_venues, x='Matches', y='Venue', orientation='h', color='Matches', color_continuous_scale='Blues')
+        fig_venues.update_layout(yaxis={'categoryorder':'total ascending'}, plot_bgcolor='white', paper_bgcolor='white', font=dict(family="Inter", color="#333"))
+        st.plotly_chart(fig_venues, use_container_width=True)
+
+    with adv_col2:
+        st.markdown("### Top Star Performers (POTM)")
+        top_players = filtered_df['player_of_match'].value_counts().head(8).reset_index()
+        top_players.columns = ['Player', 'Awards']
+        fig_players = px.bar(top_players, x='Awards', y='Player', orientation='h', color='Awards', color_continuous_scale='Purples')
+        fig_players.update_layout(yaxis={'categoryorder':'total ascending'}, plot_bgcolor='white', paper_bgcolor='white', font=dict(family="Inter", color="#333"))
+        st.plotly_chart(fig_players, use_container_width=True)
+
+        st.markdown("### Toss & Match Win Correlation")
+        toss_match_wins = filtered_df[filtered_df['toss_winner'] == filtered_df['winner']]['winner'].value_counts().head(8).reset_index()
+        toss_match_wins.columns = ['Team', 'Wins']
+        fig_toss_team = px.bar(toss_match_wins, x='Team', y='Wins', color_discrete_sequence=['#7c3aed'])
+        fig_toss_team.update_layout(plot_bgcolor='white', paper_bgcolor='white', font=dict(family="Inter", color="#333"))
+        st.plotly_chart(fig_toss_team, use_container_width=True)
