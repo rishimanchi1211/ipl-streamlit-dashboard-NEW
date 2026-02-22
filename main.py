@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# --- PAGE CONFIGURATION ---
 st.set_page_config(
     page_title="IPL Analytics Hub",
     page_icon="🏏",
@@ -9,6 +10,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# --- ADVANCED STYLING ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -90,14 +92,16 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# --- MIXED TEAM LOGOS (URLs OR LOCAL FILES) ---
+# Make sure image_10.png, image_11.png, and image_12.png are in the same directory as this script.
 TEAM_LOGOS = {
     "Chennai Super Kings": "https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Chennai_Super_Kings_Logo.svg/200px-Chennai_Super_Kings_Logo.svg.png",
     "Mumbai Indians": "https://upload.wikimedia.org/wikipedia/en/thumb/c/cd/Mumbai_Indians_Logo.svg/200px-Mumbai_Indians_Logo.svg.png",
-    "Royal Challengers Bangalore": "https://upload.wikimedia.org/wikipedia/en/thumb/f/f0/Royal_Challengers_Bengaluru_logo.svg/200px-Royal_Challengers_Bengaluru_logo.svg.png",
-    "Royal Challengers Bengaluru": "https://upload.wikimedia.org/wikipedia/en/thumb/f/f0/Royal_Challengers_Bengaluru_logo.svg/200px-Royal_Challengers_Bengaluru_logo.svg.png",
+    "Royal Challengers Bangalore": "image_10.png", # Using local file
+    "Royal Challengers Bengaluru": "image_10.png", # Using local file
     "Kolkata Knight Riders": "https://upload.wikimedia.org/wikipedia/en/thumb/4/4c/Kolkata_Knight_Riders_Logo.svg/200px-Kolkata_Knight_Riders_Logo.svg.png",
-    "Sunrisers Hyderabad": "https://upload.wikimedia.org/wikipedia/en/thumb/8/81/Sunrisers_Hyderabad.svg/200px-Sunrisers_Hyderabad.svg.png",
-    "Rajasthan Royals": "https://upload.wikimedia.org/wikipedia/en/thumb/6/60/Rajasthan_Royals_Logo.svg/200px-Rajasthan_Royals_Logo.svg.png",
+    "Sunrisers Hyderabad": "image_11.png", # Using local file
+    "Rajasthan Royals": "image_12.png", # Using local file
     "Delhi Capitals": "https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/Delhi_Capitals.svg/200px-Delhi_Capitals.svg.png",
     "Delhi Daredevils": "https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/Delhi_Capitals.svg/200px-Delhi_Capitals.svg.png",
     "Punjab Kings": "https://upload.wikimedia.org/wikipedia/en/thumb/d/d4/Punjab_Kings_Logo.svg/200px-Punjab_Kings_Logo.svg.png",
@@ -140,9 +144,9 @@ active_teams = [
 
 banner_html = '<div class="logo-banner">'
 for team in active_teams:
-    logo_url = TEAM_LOGOS.get(team, "")
-    if logo_url:
-        banner_html += f'<div class="logo-card"><img src="{logo_url}" title="{team}" alt="{team}"></div>'
+    logo_path = TEAM_LOGOS.get(team, "")
+    if logo_path:
+        banner_html += f'<div class="logo-card"><img src="{logo_path}" title="{team}" alt="{team}"></div>'
 banner_html += "</div>"
 st.markdown(banner_html, unsafe_allow_html=True)
 
