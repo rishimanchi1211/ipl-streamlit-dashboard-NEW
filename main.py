@@ -86,9 +86,24 @@ st.markdown("""
         border: 1px solid #e2e8f0;
     }
 
-    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
-    .stTabs [data-baseweb="tab"] { border-radius: 8px; background-color: #fff; border: 1px solid #e2e8f0; padding: 10px 20px; }
-    .stTabs [aria-selected="true"] { background-color: #ebf8ff; border-color: #3b82f6; color: #1e40af; font-weight: 600; }
+    .stTabs [data-baseweb="tab-list"] { 
+        gap: 15px; 
+        padding-bottom: 12px;
+    }
+    .stTabs [data-baseweb="tab"] { 
+        border-radius: 8px; 
+        background-color: #fff; 
+        border: 1px solid #e2e8f0; 
+        padding: 10px 24px;
+        margin-bottom: 5px;
+    }
+    .stTabs [aria-selected="true"] { 
+        background-color: #ebf8ff; 
+        border-color: #3b82f6; 
+        color: #1e40af; 
+        font-weight: 600; 
+        border-bottom: 3px solid #3b82f6 !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -101,7 +116,7 @@ def get_image_base64(path_or_url):
         with open(path_or_url, "rb") as f:
             data = f.read()
             encoded = base64.b64encode(data).decode()
-            ext = path_or_url.split('.')[-1].lower()
+            ext = path_or_url.split(".")[-1].lower()
             mime_type = "image/jpeg" if ext in ["jpg", "jpeg"] else f"image/{ext}"
             return f"data:{mime_type};base64,{encoded}"
     return "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
@@ -234,28 +249,29 @@ with tab2:
             ((filtered_df['team1'] == team1_select) & (filtered_df['team2'] == team2_select)) |
             ((filtered_df['team1'] == team2_select) & (filtered_df['team2'] == team1_select))
         ]
-        if len(h2h_matches) > 0:
-            team1_wins = len(h2h_matches[h2h_matches['winner'] == team1_select])
-            team2_wins = len(h2h_matches[h2h_matches['winner'] == team2_select])
+        
+        team1_wins = len(h2h_matches[h2h_matches['winner'] == team1_select])
+        team2_wins = len(h2h_matches[h2h_matches['winner'] == team2_select])
+        total_matches = len(h2h_matches)
 
-            logo1 = TEAM_LOGOS.get(team1_select, "")
-            logo2 = TEAM_LOGOS.get(team2_select, "")
-            
-            img_src1 = get_image_base64(logo1)
-            img_src2 = get_image_base64(logo2)
+        logo1 = TEAM_LOGOS.get(team1_select, "")
+        logo2 = TEAM_LOGOS.get(team2_select, "")
+        
+        img_src1 = get_image_base64(logo1)
+        img_src2 = get_image_base64(logo2)
 
-            logo_col1, logo_col2, logo_col3 = st.columns([1, 1, 1])
-            with logo_col1:
-                st.markdown(f"<div style='text-align: center; padding: 20px;'><img src='{img_src1}' width='130'></div>", unsafe_allow_html=True)
-                st.markdown(f"<h2 style='text-align: center; color: #1e40af; margin: 0;'>{team1_wins} Wins</h2>", unsafe_allow_html=True)
-            with logo_col2:
-                st.markdown("<h4 style='text-align: center; color: #64748b; margin-top: 40px; margin-bottom: 5px;'>Total Encounters</h4>", unsafe_allow_html=True)
-                st.markdown(f"<h1 style='text-align: center; font-size: 4rem; color: #0f172a; margin: 0;'>{len(h2h_matches)}</h1>", unsafe_allow_html=True)
-            with logo_col3:
-                st.markdown(f"<div style='text-align: center; padding: 20px;'><img src='{img_src2}' width='130'></div>", unsafe_allow_html=True)
-                st.markdown(f"<h2 style='text-align: center; color: #1e40af; margin: 0;'>{team2_wins} Wins</h2>", unsafe_allow_html=True)
-        else:
-            st.info("No matches found between these teams in the selected filter range.")
+        logo_col1, logo_col2, logo_col3 = st.columns([1, 1, 1])
+        with logo_col1:
+            st.markdown(f"<div style='text-align: center; padding: 20px;'><img src='{img_src1}' width='130'></div>", unsafe_allow_html=True)
+            st.markdown(f"<h2 style='text-align: center; color: #1e40af; margin: 0;'>{team1_wins} Wins</h2>", unsafe_allow_html=True)
+        with logo_col2:
+            st.markdown("<h4 style='text-align: center; color: #64748b; margin-top: 40px; margin-bottom: 5px;'>Total Encounters</h4>", unsafe_allow_html=True)
+            st.markdown(f"<h1 style='text-align: center; font-size: 4rem; color: #0f172a; margin: 0;'>{total_matches}</h1>", unsafe_allow_html=True)
+            if total_matches == 0:
+                st.markdown("<p style='text-align: center; color: #dc2626; font-weight: 500; margin-top: 15px;'>No matches found between these teams in the selected filter range.</p>", unsafe_allow_html=True)
+        with logo_col3:
+            st.markdown(f"<div style='text-align: center; padding: 20px;'><img src='{img_src2}' width='130'></div>", unsafe_allow_html=True)
+            st.markdown(f"<h2 style='text-align: center; color: #1e40af; margin: 0;'>{team2_wins} Wins</h2>", unsafe_allow_html=True)
 
 with tab3:
     st.markdown("### Full Match Database")
