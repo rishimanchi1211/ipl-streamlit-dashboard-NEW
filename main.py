@@ -78,7 +78,7 @@ st.markdown("""
         object-fit: contain;
     }
 
-    div[data-testid="metric-container"], [data-testid="stPlotlyChart"], .stDataFrame {
+    [data-testid="stPlotlyChart"], .stDataFrame {
         background-color: white;
         border-radius: 12px;
         padding: 20px;
@@ -90,6 +90,7 @@ st.markdown("""
         gap: 15px; 
         padding-bottom: 12px;
     }
+    
     .stTabs [data-baseweb="tab"] { 
         border-radius: 8px; 
         background-color: #fff; 
@@ -97,12 +98,51 @@ st.markdown("""
         padding: 10px 24px;
         margin-bottom: 5px;
     }
+    
     .stTabs [aria-selected="true"] { 
         background-color: #ebf8ff; 
         border-color: #3b82f6; 
         color: #1e40af; 
         font-weight: 600; 
         border-bottom: 3px solid #3b82f6 !important;
+    }
+
+    .kpi-wrapper {
+        background-color: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease;
+    }
+    
+    .kpi-wrapper:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        border-color: #3b82f6;
+    }
+    
+    .kpi-title {
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+    
+    .kpi-value {
+        color: #0f172a;
+        font-size: 36px;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+    
+    .kpi-icon {
+        font-size: 28px;
+        margin-bottom: 12px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -189,11 +229,50 @@ filtered_df = df[
 ].copy()
 
 st.markdown("<br>", unsafe_allow_html=True)
-col1, col2, col3, col4 = st.columns(4)
-with col1: st.metric("Total Matches Played", f"{len(filtered_df):,}")
-with col2: st.metric("Teams Involved", len(set(filtered_df['team1'].unique().tolist() + filtered_df['team2'].unique().tolist())))
-with col3: st.metric("Unique Venues", filtered_df['venue'].nunique())
-with col4: st.metric("Host Cities", filtered_df['city'].nunique())
+
+kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+
+total_matches = len(filtered_df)
+total_teams = len(set(filtered_df['team1'].unique().tolist() + filtered_df['team2'].unique().tolist()))
+total_venues = filtered_df['venue'].nunique()
+total_cities = filtered_df['city'].nunique()
+
+with kpi1:
+    st.markdown(f'''
+        <div class="kpi-wrapper">
+            <div class="kpi-icon">🏏</div>
+            <div class="kpi-title">Total Matches Played</div>
+            <div class="kpi-value">{total_matches:,}</div>
+        </div>
+    ''', unsafe_allow_html=True)
+    
+with kpi2:
+    st.markdown(f'''
+        <div class="kpi-wrapper">
+            <div class="kpi-icon">🛡️</div>
+            <div class="kpi-title">Teams Involved</div>
+            <div class="kpi-value">{total_teams}</div>
+        </div>
+    ''', unsafe_allow_html=True)
+    
+with kpi3:
+    st.markdown(f'''
+        <div class="kpi-wrapper">
+            <div class="kpi-icon">🏟️</div>
+            <div class="kpi-title">Unique Venues</div>
+            <div class="kpi-value">{total_venues}</div>
+        </div>
+    ''', unsafe_allow_html=True)
+    
+with kpi4:
+    st.markdown(f'''
+        <div class="kpi-wrapper">
+            <div class="kpi-icon">🏙️</div>
+            <div class="kpi-title">Host Cities</div>
+            <div class="kpi-value">{total_cities}</div>
+        </div>
+    ''', unsafe_allow_html=True)
+
 st.markdown("<br>", unsafe_allow_html=True)
 
 tab1, tab2, tab3, tab4 = st.tabs(["Performance Analysis", "Head-to-Head", "Raw Dataset", "Advanced Insights"])
