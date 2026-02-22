@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import base64
+import os
 
-# --- PAGE CONFIGURATION ---
 st.set_page_config(
     page_title="IPL Analytics Hub",
     page_icon="🏏",
@@ -10,7 +11,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- ADVANCED STYLING ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -92,28 +92,34 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- MIXED TEAM LOGOS (URLs OR LOCAL FILES) ---
-# Make sure image_10.png, image_11.png, and image_12.png are in the same directory as this script.
+def get_image_base64(path_or_url):
+    if not path_or_url:
+        return ""
+    if path_or_url.startswith("http"):
+        return path_or_url
+    if os.path.isfile(path_or_url):
+        with open(path_or_url, "rb") as f:
+            data = f.read()
+            encoded = base64.b64encode(data).decode()
+            ext = path_or_url.split('.')[-1].lower()
+            mime_type = "image/jpeg" if ext in ["jpg", "jpeg"] else f"image/{ext}"
+            return f"data:{mime_type};base64,{encoded}"
+    return "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+
 TEAM_LOGOS = {
     "Chennai Super Kings": "https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Chennai_Super_Kings_Logo.svg/200px-Chennai_Super_Kings_Logo.svg.png",
     "Mumbai Indians": "https://upload.wikimedia.org/wikipedia/en/thumb/c/cd/Mumbai_Indians_Logo.svg/200px-Mumbai_Indians_Logo.svg.png",
-    "Royal Challengers Bangalore": "image_10.png", # Using local file
-    "Royal Challengers Bengaluru": "image_10.png", # Using local file
+    "Royal Challengers Bangalore": "image_e791fc.jpg",
+    "Royal Challengers Bengaluru": "image_e791fc.jpg",
     "Kolkata Knight Riders": "https://upload.wikimedia.org/wikipedia/en/thumb/4/4c/Kolkata_Knight_Riders_Logo.svg/200px-Kolkata_Knight_Riders_Logo.svg.png",
-    "Sunrisers Hyderabad": "image_11.png", # Using local file
-    "Rajasthan Royals": "image_12.png", # Using local file
+    "Sunrisers Hyderabad": "image_e79254.png",
+    "Rajasthan Royals": "image_e7953e.png",
     "Delhi Capitals": "https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/Delhi_Capitals.svg/200px-Delhi_Capitals.svg.png",
     "Delhi Daredevils": "https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/Delhi_Capitals.svg/200px-Delhi_Capitals.svg.png",
     "Punjab Kings": "https://upload.wikimedia.org/wikipedia/en/thumb/d/d4/Punjab_Kings_Logo.svg/200px-Punjab_Kings_Logo.svg.png",
     "Kings XI Punjab": "https://upload.wikimedia.org/wikipedia/en/thumb/d/d4/Punjab_Kings_Logo.svg/200px-Punjab_Kings_Logo.svg.png",
     "Gujarat Titans": "https://upload.wikimedia.org/wikipedia/en/thumb/0/09/Gujarat_Titans_Logo.svg/200px-Gujarat_Titans_Logo.svg.png",
-    "Lucknow Super Giants": "https://upload.wikimedia.org/wikipedia/en/thumb/a/a9/Lucknow_Super_Giants_IPL_Logo.svg/200px-Lucknow_Super_Giants_IPL_Logo.svg.png",
-    "Pune Warriors": "https://upload.wikimedia.org/wikipedia/en/thumb/1/18/Pune_Warriors_India_logo.svg/200px-Pune_Warriors_India_logo.svg.png",
-    "Deccan Chargers": "https://upload.wikimedia.org/wikipedia/en/thumb/b/bf/Deccan_Chargers_Logo.svg/200px-Deccan_Chargers_Logo.svg.png",
-    "Gujarat Lions": "https://upload.wikimedia.org/wikipedia/en/thumb/3/30/Gujarat_Lions_Logo.svg/200px-Gujarat_Lions_Logo.svg.png",
-    "Rising Pune Supergiant": "https://upload.wikimedia.org/wikipedia/en/thumb/0/02/Rising_Pune_Supergiants_Logo.svg/200px-Rising_Pune_Supergiants_Logo.svg.png",
-    "Rising Pune Supergiants": "https://upload.wikimedia.org/wikipedia/en/thumb/0/02/Rising_Pune_Supergiants_Logo.svg/200px-Rising_Pune_Supergiants_Logo.svg.png",
-    "Kochi Tuskers Kerala": "https://upload.wikimedia.org/wikipedia/en/thumb/d/d4/Kochi_Tuskers_Kerala_Logo.svg/200px-Kochi_Tuskers_Kerala_Logo.svg.png"
+    "Lucknow Super Giants": "https://upload.wikimedia.org/wikipedia/en/thumb/a/a9/Lucknow_Super_Giants_IPL_Logo.svg/200px-Lucknow_Super_Giants_IPL_Logo.svg.png"
 }
 
 @st.cache_data
@@ -146,7 +152,8 @@ banner_html = '<div class="logo-banner">'
 for team in active_teams:
     logo_path = TEAM_LOGOS.get(team, "")
     if logo_path:
-        banner_html += f'<div class="logo-card"><img src="{logo_path}" title="{team}" alt="{team}"></div>'
+        img_src = get_image_base64(logo_path)
+        banner_html += f'<div class="logo-card"><img src="{img_src}" title="{team}" alt="{team}"></div>'
 banner_html += "</div>"
 st.markdown(banner_html, unsafe_allow_html=True)
 
@@ -233,16 +240,19 @@ with tab2:
 
             logo1 = TEAM_LOGOS.get(team1_select, "")
             logo2 = TEAM_LOGOS.get(team2_select, "")
+            
+            img_src1 = get_image_base64(logo1)
+            img_src2 = get_image_base64(logo2)
 
             logo_col1, logo_col2, logo_col3 = st.columns([1, 1, 1])
             with logo_col1:
-                st.markdown(f"<div style='text-align: center; padding: 20px;'><img src='{logo1}' width='130'></div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='text-align: center; padding: 20px;'><img src='{img_src1}' width='130'></div>", unsafe_allow_html=True)
                 st.markdown(f"<h2 style='text-align: center; color: #1e40af; margin: 0;'>{team1_wins} Wins</h2>", unsafe_allow_html=True)
             with logo_col2:
                 st.markdown("<h4 style='text-align: center; color: #64748b; margin-top: 40px; margin-bottom: 5px;'>Total Encounters</h4>", unsafe_allow_html=True)
                 st.markdown(f"<h1 style='text-align: center; font-size: 4rem; color: #0f172a; margin: 0;'>{len(h2h_matches)}</h1>", unsafe_allow_html=True)
             with logo_col3:
-                st.markdown(f"<div style='text-align: center; padding: 20px;'><img src='{logo2}' width='130'></div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='text-align: center; padding: 20px;'><img src='{img_src2}' width='130'></div>", unsafe_allow_html=True)
                 st.markdown(f"<h2 style='text-align: center; color: #1e40af; margin: 0;'>{team2_wins} Wins</h2>", unsafe_allow_html=True)
         else:
             st.info("No matches found between these teams in the selected filter range.")
