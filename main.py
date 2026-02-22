@@ -154,6 +154,28 @@ st.markdown("""
         font-size: clamp(20px, 4vw, 28px);
         margin-bottom: 8px;
     }
+
+    .analytical-objective {
+        background-color: #ebf8ff;
+        border-left: 4px solid #3b82f6;
+        padding: 15px 20px;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 25px;
+        color: #1e40af;
+        font-size: clamp(14px, 2.5vw, 16px);
+        line-height: 1.5;
+    }
+
+    .analysis-text {
+        background-color: #ffffff;
+        padding: 15px 20px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+        margin-top: 15px;
+        font-size: clamp(13px, 2.5vw, 15px);
+        line-height: 1.6;
+    }
     
     @media (max-width: 768px) {
         .glow-header-container {
@@ -219,6 +241,12 @@ st.markdown('''
         <h1 class="glow-text">IPL Analytics Hub</h1>
     </div>
 ''', unsafe_allow_html=True)
+
+st.markdown("""
+    <div class="analytical-objective">
+        <strong>Analytical Objective:</strong> This interactive dashboard evaluates historical IPL franchise performance, analyzes the statistical impact of toss decisions on match outcomes, and visualizes head-to-head match records to uncover strategic trends across different venues and seasons.
+    </div>
+""", unsafe_allow_html=True)
 
 active_teams = [
     "Chennai Super Kings", "Mumbai Indians", "Royal Challengers Bangalore",
@@ -339,6 +367,12 @@ with tab1:
         display_df = display_df.sort_values('match_date', ascending=False).head(10)
         display_df.columns = ['Date', 'Team 1', 'Team 2', 'Winner', 'Player of Match']
         st.dataframe(display_df, use_container_width=True, hide_index=True)
+        
+    st.markdown("""
+        <div class="analysis-text">
+            <strong>Analysis:</strong> The bar chart demonstrates a clear hierarchy in franchise performance, with select teams accumulating significantly more historical wins. The toss analysis reveals a distinct trend where captains prefer to field first, and the subsequent win strategy chart proves this decision is structurally advantageous, yielding higher match win rates when chasing targets.
+        </div>
+    """, unsafe_allow_html=True)
 
 with tab2:
     st.markdown("### Compare Teams")
@@ -375,11 +409,23 @@ with tab2:
             st.markdown(f"<div style='text-align: center; padding: 10px;'><img src='{img_src2}' style='width: 100%; max-width: 130px; object-fit: contain;'></div>", unsafe_allow_html=True)
             st.markdown(f"<h2 style='text-align: center; color: #1e40af; margin: 0; font-size: clamp(1.5rem, 4vw, 2rem);'>{team2_wins} Wins</h2>", unsafe_allow_html=True)
 
+    st.markdown("""
+        <div class="analysis-text">
+            <strong>Analysis:</strong> The head-to-head comparison isolates historical matchups between specific franchises. Reviewing the direct win-loss ratios exposes psychological advantages and matchup dependencies that are obscured in aggregate seasonal standings. Outliers in these records often dictate future auction strategies.
+        </div>
+    """, unsafe_allow_html=True)
+
 with tab3:
     st.markdown("### Full Match Database")
     st.dataframe(filtered_df, use_container_width=True)
     csv = filtered_df.to_csv(index=False)
     st.download_button(label="Download as CSV", data=csv, file_name="ipl_analysis_data.csv", mime="text/csv")
+    
+    st.markdown("""
+        <div class="analysis-text">
+            <strong>Analysis:</strong> Providing the raw dataset ensures transparency and allows users to trace the visual insights back to specific event occurrences. The table format is necessary for identifying edge cases, examining anomalies in venues, and auditing match outcomes at a granular level.
+        </div>
+    """, unsafe_allow_html=True)
 
 with tab4:
     adv_col1, adv_col2 = st.columns([1, 1])
@@ -405,9 +451,20 @@ with tab4:
         fig_players.update_layout(yaxis={'categoryorder':'total ascending'}, plot_bgcolor='white', paper_bgcolor='white', font=dict(family="Inter", color="#333"), margin=dict(l=10, r=10, t=30, b=10))
         st.plotly_chart(fig_players, use_container_width=True)
 
-        st.markdown("### Toss & Match Win Correlation")
-        toss_match_wins = filtered_df[filtered_df['toss_winner'] == filtered_df['winner']]['winner'].value_counts().head(8).reset_index()
-        toss_match_wins.columns = ['Team', 'Wins']
-        fig_toss_team = px.bar(toss_match_wins, x='Team', y='Wins', color_discrete_sequence=['#7c3aed'])
-        fig_toss_team.update_layout(plot_bgcolor='white', paper_bgcolor='white', font=dict(family="Inter", color="#333"), margin=dict(l=10, r=10, t=30, b=10))
-        st.plotly_chart(fig_toss_team, use_container_width=True)
+        st.markdown("### Win Efficiency Distribution")
+        team_stats = []
+        for t in all_teams:
+            m_played = len(filtered_df[(filtered_df['team1'] == t) | (filtered_df['team2'] == t)])
+            m_won = len(filtered_df[filtered_df['winner'] == t])
+            if m_played > 0:
+                team_stats.append({'Team': t, 'Matches Played': m_played, 'Wins': m_won, 'Win Rate (%)': (m_won/m_played)*100})
+        scatter_df = pd.DataFrame(team_stats)
+        fig_scatter = px.scatter(scatter_df, x='Matches Played', y='Wins', size='Win Rate (%)', color='Team', hover_name='Team')
+        fig_scatter.update_layout(plot_bgcolor='white', paper_bgcolor='white', font=dict(family="Inter", color="#333"), margin=dict(l=10, r=10, t=30, b=10), showlegend=False)
+        st.plotly_chart(fig_scatter, use_container_width=True)
+
+    st.markdown("""
+        <div class="analysis-text">
+            <strong>Analysis:</strong> The line chart documents scheduling shifts and timeline disruptions, while the venue layout reveals spatial dependencies. The scatter plot provides crucial insight into win efficiency, plotting matches against wins. Teams positioned above the general cluster line represent positive outliers with superior conversion rates, fulfilling the objective to measure true relative performance.
+        </div>
+    """, unsafe_allow_html=True)
