@@ -28,7 +28,7 @@ st.markdown("""
         align-items: center;
         gap: 25px;
         box-shadow: 0 0 25px rgba(66, 153, 225, 0.5), inset 0 0 10px rgba(255,255,255,0.1);
-        margin-bottom: 30px;
+        margin-bottom: 25px;
         margin-top: -20px;
         border: 1px solid #2c4a7c;
         flex-wrap: wrap;
@@ -50,30 +50,42 @@ st.markdown("""
         text-align: center;
     }
 
-    /* --- ANALYTICAL OBJECTIVE STYLING --- */
+    /* --- REDESIGNED ANALYTICAL OBJECTIVE STYLING --- */
     .analytical-objective {
-        background: linear-gradient(145deg, #1e293b, #0f172a);
-        color: #f8fafc;
-        padding: 24px 30px;
-        border-radius: 16px;
+        background: #ffffff;
+        color: #334155;
+        padding: 20px 25px;
+        border-radius: 12px;
+        border-left: 6px solid #3b82f6;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
-        border: 1px solid #334155;
-        font-size: clamp(15px, 2.5vw, 17px);
-        line-height: 1.7;
-        text-align: center;
-        position: relative;
+        font-size: clamp(14px, 2vw, 15px);
+        line-height: 1.6;
+        display: flex;
+        align-items: flex-start;
+        gap: 18px;
+    }
+
+    .obj-icon {
+        font-size: 28px;
+        background: #eff6ff;
+        min-width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #bfdbfe;
     }
 
     .analytical-objective strong {
-        color: #38bdf8;
-        font-size: clamp(18px, 3vw, 22px);
-        letter-spacing: 1.5px;
+        color: #1e40af;
+        font-size: clamp(16px, 2.5vw, 18px);
+        letter-spacing: 0.5px;
         text-transform: uppercase;
         display: block;
-        margin-bottom: 12px;
+        margin-bottom: 6px;
         font-weight: 800;
-        text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
     }
 
     /* --- ANALYSIS TEXT STYLING --- */
@@ -225,7 +237,10 @@ st.markdown("""
             padding: 8px 10px;
         }
         .analytical-objective {
-            padding: 20px 15px;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
         }
     }
     </style>
@@ -283,8 +298,11 @@ st.markdown('''
 
 st.markdown("""
     <div class="analytical-objective">
-        <strong>🎯 Analytical Objective</strong>
-        This interactive dashboard evaluates historical IPL franchise performance, analyzes the statistical impact of toss decisions on match outcomes, and visualizes head-to-head match records to uncover strategic trends across different venues and seasons.
+        <div class="obj-icon">🎯</div>
+        <div>
+            <strong>Analytical Objective</strong>
+            This interactive dashboard evaluates historical IPL franchise performance, analyzes the statistical impact of toss decisions on match outcomes, and visualizes head-to-head match records to uncover strategic trends across different venues and seasons.
+        </div>
     </div>
 """, unsafe_allow_html=True)
 
