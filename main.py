@@ -117,4 +117,21 @@ st.markdown("""
         display: flex;
         gap: 20px;
         align-items: flex-start;
-        transition: all 0.4s cubic-
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .insight-card:hover {
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 20px 35px -10px rgba(139, 92, 246, 0.15);
+        border-color: #ddd6fe;
+    }
+
+    .insight-icon {
+        background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+        color: white;
+        min-width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
