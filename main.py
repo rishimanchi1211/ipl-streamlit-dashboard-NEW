@@ -85,7 +85,20 @@ st.markdown('''
     </div>
     <div class="objective-wrapper">
         <div class="analytical-objective">
-            <div class="obj-title"><span>🎯</span> Analytical Objective</div>
+            <div class="obj-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 28px; height: 28px; stroke: url(#blue-purple);">
+                    <defs>
+                        <linearGradient id="blue-purple" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#2563eb" />
+                            <stop offset="100%" stop-color="#8b5cf6" />
+                        </linearGradient>
+                    </defs>
+                    <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                    <polyline points="2 17 12 22 22 17" />
+                    <polyline points="2 12 12 17 22 12" />
+                </svg>
+                Analytical Objective
+            </div>
             <div class="obj-text">This interactive dashboard evaluates historical IPL franchise performance, analyzes the statistical impact of toss decisions on match outcomes, and visualizes head-to-head match records to uncover strategic trends across different venues and seasons.</div>
         </div>
     </div>
@@ -219,4 +232,4 @@ with tab4:
 
     st.markdown('''<div class="insight-card"><div class="insight-icon">🚀</div><div class="insight-content"><span class="insight-title">Advanced Metric Observations</span>The line chart documents scheduling shifts and timeline disruptions, while the venue layout reveals spatial dependencies for specific teams. The scatter plot provides crucial insight into win efficiency, plotting total matches against actual wins. Teams positioned above the general cluster line represent positive outliers with superior match conversion rates.</div></div>''', unsafe_allow_html=True)
 
-# === END OF FILE - IF YOU DO NOT SEE THIS LINE IN GITHUB, YOU DID NOT COPY THE WHOLE THING! ===
+# === END OF FILE ===
