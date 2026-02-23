@@ -144,7 +144,8 @@ with tab1:
         st.markdown("### Toss Decision Trends")
         toss_decision = filtered_df['toss_decision'].value_counts().reset_index()
         toss_decision.columns = ['Decision', 'Count']
-        fig_toss = px.pie(toss_decision, names='Decision', values='Count', hole=0.5, color_discrete_sequence=['#2563eb', '#8b5cf6'])
+        # MODIFIED COLORS HERE: High contrast Blue vs Teal
+        fig_toss = px.pie(toss_decision, names='Decision', values='Count', hole=0.5, color_discrete_sequence=['#3b82f6', '#2dd4bf'])
         fig_toss.update_layout(plot_bgcolor='white', paper_bgcolor='white', font=dict(family="Plus Jakarta Sans", color="#334155"), legend=dict(orientation="h", y=-0.2), margin=dict(l=10, r=10, t=30, b=10))
         st.plotly_chart(fig_toss, use_container_width=True)
 
